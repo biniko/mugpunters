@@ -2,6 +2,8 @@ from datetime import date
 
 from django.db import models
 
+from django.core.exceptions import ValidationError
+
 
 # Create your models here.
 # from accounts.models import CustomUser
@@ -53,3 +55,22 @@ class Tip(models.Model):
 
     def __str__(self):
         return f"Round {self.round} {self.team}"
+
+    def clean(self):
+        if not self.pk:
+            # No PK, means we are in add mode
+            # We are in add mode, so we need to check if this round has already been submitted
+            existing = Tip.objects.filter(round=self.round)
+            if existing:
+                raise ValidationError({'round': "A tip for this round has already been submitted."})
+
+        # Now we check if this tip has the same team selected as the last round.
+        # We do this in add or edit mode.
+        existing = Tip.objects.filter(round=self.round.number - 1, team=self.team)
+        if existing:
+            raise ValidationError("The same team cannot be picked in two consecutive rounds. Please pick a different "
+                                  "team.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
