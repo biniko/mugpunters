@@ -15,8 +15,8 @@ class Season(models.Model):
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=50)
-    logo_url = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, null=True, blank=True)
+    logo_url = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return self.name
