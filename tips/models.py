@@ -33,6 +33,9 @@ class Round(models.Model):
 
 
 class Match(models.Model):
+    class Meta:
+        verbose_name_plural = "Matches"
+
     objects = models.Manager()
     round = models.ForeignKey(Round, on_delete=models.CASCADE)
     home_team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='home_team')
